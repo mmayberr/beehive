@@ -6,6 +6,7 @@ var camera, scene, renderer, objects;
 var particleLight;
 var dae;
 
+/*
 var loader = new THREE.ColladaLoader();
 loader.options.convertUpAxis = true;
 loader.load( '../models/deep.dae', function ( collada ) {
@@ -30,6 +31,35 @@ loader.load( '../models/deep.dae', function ( collada ) {
 	animate();
 
 } );
+*/
+
+function load(daeLocation, x, y, z){
+    var manager = new THREE.LoadingManager();
+    manager.onProgress = function(item, loaded, total) {
+        console.log(item, loaded, total);
+    };
+
+    var loader = new THREE.ColladaLoader(manager);
+    loader.options.convertUpAxis = true;
+
+    loader.load(daeLocation, function(collada) {
+            dae = collada.scene;
+
+            dae.traverse( function ( child ) {
+				if ( child instanceof THREE.SkinnedMesh ) {
+					var animation = new THREE.Animation( child, child.geometry.animation );
+					animation.play();
+				}
+			} );
+
+            dae.position.set(x, y, z);
+            dae.scale.x = dae.scale.y = dae.scale.z = 0.05; 
+            scene.add(dae);
+            render();
+        }, function(progress) {
+            // show some progress
+    });
+}
 
 function init() {
 
@@ -106,6 +136,30 @@ function init() {
 
 	window.addEventListener( 'resize', onWindowResize, false );
 
+	// load models
+
+	// deeps
+	var numdeeps = 2;
+	for(var deepcout = 0 ; deepcout < numdeeps ; deepcout++){
+		var ybase = deepcout * 12.2;
+		load('../models/deep.dae', 0, ybase, 0);
+		for(var deepframecout = 0 ; deepframecout < 4 ; deepframecout++){
+			load("../models/deepframe.dae", 1.1 + deepframecout*2.2, ybase + 0.27, 0);
+			load("../models/deepframe.dae", -(1.1 + deepframecout*2.2), ybase + 0.27, 0);
+		}
+	}
+
+	// supers
+	var numsupers = 2;
+	for(var supercout = 0 ; supercout < numsupers ; supercout++){
+		var ybase = (numdeeps * 12.2) + supercout * 8.4;
+		load('../models/super.dae', 0, ybase, 0);
+		for(var superframecout = 0 ; superframecout < 4 ; superframecout++){
+			load("../models/superframe.dae", 1.1 + superframecout*2.2, ybase + 0.2, 0);
+			load("../models/superframe.dae", -(1.1 + superframecout*2.2), ybase + 0.2, 0);
+		}
+	}
+
 }
 
 function onWindowResize() {
@@ -152,3 +206,8 @@ function render() {
 	renderer.render( scene, camera );
 
 }
+
+// main
+
+init();
+animate();
