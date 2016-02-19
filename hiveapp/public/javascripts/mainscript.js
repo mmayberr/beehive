@@ -33,6 +33,15 @@ loader.load( '../models/deep.dae', function ( collada ) {
 } );
 */
 
+var setMaterial = function(node, material) {
+  node.material = material;
+  if (node.children) {
+    for (var i = 0; i < node.children.length; i++) {
+      setMaterial(node.children[i], material);
+    }
+  }
+}
+
 function load(daeLocation, x, y, z){
     var manager = new THREE.LoadingManager();
     manager.onProgress = function(item, loaded, total) {
@@ -55,6 +64,13 @@ function load(daeLocation, x, y, z){
             dae.position.set(x, y, z);
             dae.scale.x = dae.scale.y = dae.scale.z = 0.05; 
             scene.add(dae);
+
+			var material = new THREE.MeshBasicMaterial();
+            material.map = THREE.ImageUtils.loadTexture('../images/wood.png');
+            material.bumpMap = THREE.ImageUtils.loadTexture('../images/woodbw.png');
+			material.bumpScale = 0.05;
+			setMaterial(dae, material);
+
             render();
         }, function(progress) {
             // show some progress
@@ -138,6 +154,9 @@ function init() {
 
 	// load models
 
+	// base entrance
+	load('../models/bottomboard.dae', 0, -1.4, 0);
+
 	// deeps
 	var numdeeps = 2;
 	for(var deepcout = 0 ; deepcout < numdeeps ; deepcout++){
@@ -159,6 +178,9 @@ function init() {
 			load("../models/superframe.dae", -(1.1 + superframecout*2.2), ybase + 0.2, 0);
 		}
 	}
+
+	// inner cover
+	load('../models/innercover.dae', 0, (numdeeps * 12.2) + (numsupers * 8.4), 0);
 
 }
 
