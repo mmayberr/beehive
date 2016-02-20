@@ -205,7 +205,7 @@ function init() {
 			load("../models/superframe.dae", 1.1 + superframecount*2.2, ybase + 0.2, 0);
 			load("../models/superframe.dae", -(1.1 + superframecount*2.2), ybase + 0.2, 0);
 			for(var rownum = 0; rownum < 9 ; rownum++ ){
-				for(var colnum = 0; colnum < 14 ; colnum++ ){
+				for(var colnum = 0; colnum < 22 ; colnum++ ){
 					addHex(geometry, 1.1 + superframecount*2.2, ybase+1+ rownum * 0.75, -10.75 + colnum+ (rownum % 2) * 0.5 );
 					addHex(geometry, -(1.15 + superframecount*2.2), ybase+1+ rownum * 0.75, -10.75 + colnum+ (rownum % 2) * 0.5 );
 				}
