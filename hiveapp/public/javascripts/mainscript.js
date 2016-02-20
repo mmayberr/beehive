@@ -42,7 +42,7 @@ var setMaterial = function(node, material) {
   }
 }
 
-function load(daeLocation, x, y, z){
+function load(daeLocation, x, y, z, name){
     var manager = new THREE.LoadingManager();
     manager.onProgress = function(item, loaded, total) {
         console.log(item, loaded, total);
@@ -63,6 +63,7 @@ function load(daeLocation, x, y, z){
 
             dae.position.set(x, y, z);
             dae.scale.x = dae.scale.y = dae.scale.z = 0.05; 
+            dae.name = name;
             scene.add(dae);
 
 			var material = new THREE.MeshBasicMaterial();
@@ -70,6 +71,7 @@ function load(daeLocation, x, y, z){
             material.bumpMap = THREE.ImageUtils.loadTexture('../images/woodbw.png');
 			material.bumpScale = 0.05;
 			setMaterial(dae, material);
+			// is texture even working??
 
             render();
         }, function(progress) {
@@ -82,8 +84,9 @@ function addHex(geometry, x, y, z){
 	mesh.position.set( x, y, z );
 	mesh.rotation.set( 0, 1.55, 0 );
 	mesh.scale.set( 0.7, 0.7, 0.7 );
+	mesh.name = "Honeycomb Cell";
 	scene.add( mesh );
-	render();
+	//render();
 }
 
 function init() {
@@ -177,16 +180,16 @@ function init() {
 	var geometry = new THREE.ExtrudeGeometry( hexShape, extrudeSettings );
 
 	// base entrance
-	load('../models/bottomboard.dae', 0, -1.4, 0);
+	load('../models/bottomboard.dae', 0, -1.4, 0, "Bottom Board");
 
 	// deeps
 	var numdeeps = 2;
 	for(var deepcount = 0 ; deepcount < numdeeps ; deepcount++){
 		var ybase = deepcount * 12.2;
-		load('../models/deep.dae', 0, ybase, 0);
+		load('../models/deep.dae', 0, ybase, 0, "Deep");
 		for(var deepframecount = 0 ; deepframecount < 4 ; deepframecount++){
-			load("../models/deepframe.dae", 1.1 + deepframecount*2.2, ybase + 0.27, 0);
-			load("../models/deepframe.dae", -(1.1 + deepframecount*2.2), ybase + 0.27, 0);
+			load("../models/deepframe.dae", 1.1 + deepframecount*2.2, ybase + 0.27, 0, "Deep Frame");
+			load("../models/deepframe.dae", -(1.1 + deepframecount*2.2), ybase + 0.27, 0, "Deep Frame");
 			for(var rownum = 0; rownum < 14 ; rownum++ ){
 				for(var colnum = 0; colnum < 22 ; colnum++ ){
 					addHex(geometry, 1.1 + deepframecount*2.2, ybase+1+ rownum * 0.75, -10.75 + colnum+ (rownum % 2) * 0.5 );
@@ -200,10 +203,10 @@ function init() {
 	var numsupers = 2;
 	for(var supercount = 0 ; supercount < numsupers ; supercount++){
 		var ybase = (numdeeps * 12.2) + supercount * 8.4;
-		load('../models/super.dae', 0, ybase, 0);
+		load('../models/super.dae', 0, ybase, 0, "Super");
 		for(var superframecount = 0 ; superframecount < 4 ; superframecount++){
-			load("../models/superframe.dae", 1.1 + superframecount*2.2, ybase + 0.2, 0);
-			load("../models/superframe.dae", -(1.1 + superframecount*2.2), ybase + 0.2, 0);
+			load("../models/superframe.dae", 1.1 + superframecount*2.2, ybase + 0.2, 0, "Super Frame");
+			load("../models/superframe.dae", -(1.1 + superframecount*2.2), ybase + 0.2, 0, "Super Frame");
 			for(var rownum = 0; rownum < 9 ; rownum++ ){
 				for(var colnum = 0; colnum < 22 ; colnum++ ){
 					addHex(geometry, 1.1 + superframecount*2.2, ybase+1+ rownum * 0.75, -10.75 + colnum+ (rownum % 2) * 0.5 );
@@ -214,7 +217,7 @@ function init() {
 	}
 
 	// inner cover
-	load('../models/innercover.dae', 0, (numdeeps * 12.2) + (numsupers * 8.4), 0);
+	load('../models/innercover.dae', 0, (numdeeps * 12.2) + (numsupers * 8.4), 0, "Inner Cover");
 
 }
 
