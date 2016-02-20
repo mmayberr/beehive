@@ -77,6 +77,15 @@ function load(daeLocation, x, y, z){
     });
 }
 
+function addHex(geometry, x, y, z){
+	var mesh = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial( { color: 0xf08000 } ) );
+	mesh.position.set( x, y, z );
+	mesh.rotation.set( 0, 1.55, 0 );
+	mesh.scale.set( 0.7, 0.7, 0.7 );
+	scene.add( mesh );
+	render();
+}
+
 function init() {
 
 	container = document.createElement( 'div' );
@@ -154,28 +163,53 @@ function init() {
 
 	// load models
 
+	// ready cells
+	var hexShape = new THREE.Shape();
+	hexShape.moveTo( 0,0 );
+	hexShape.lineTo( 0.5, 0.25 );
+	hexShape.lineTo( 0.5, 0.75 );
+	hexShape.lineTo( 0, 1 );
+	hexShape.lineTo( -0.5, 0.75 );
+	hexShape.lineTo( -0.5, 0.25 );
+	hexShape.lineTo( 0, 0 );
+
+	var extrudeSettings = { amount: 0.2, bevelEnabled: true, bevelSegments: 1, steps: 1, bevelSize: 0.2, bevelThickness: 0.2 };
+	var geometry = new THREE.ExtrudeGeometry( hexShape, extrudeSettings );
+
 	// base entrance
 	load('../models/bottomboard.dae', 0, -1.4, 0);
 
 	// deeps
 	var numdeeps = 2;
-	for(var deepcout = 0 ; deepcout < numdeeps ; deepcout++){
-		var ybase = deepcout * 12.2;
+	for(var deepcount = 0 ; deepcount < numdeeps ; deepcount++){
+		var ybase = deepcount * 12.2;
 		load('../models/deep.dae', 0, ybase, 0);
-		for(var deepframecout = 0 ; deepframecout < 4 ; deepframecout++){
-			load("../models/deepframe.dae", 1.1 + deepframecout*2.2, ybase + 0.27, 0);
-			load("../models/deepframe.dae", -(1.1 + deepframecout*2.2), ybase + 0.27, 0);
+		for(var deepframecount = 0 ; deepframecount < 4 ; deepframecount++){
+			load("../models/deepframe.dae", 1.1 + deepframecount*2.2, ybase + 0.27, 0);
+			load("../models/deepframe.dae", -(1.1 + deepframecount*2.2), ybase + 0.27, 0);
+			for(var rownum = 0; rownum < 14 ; rownum++ ){
+				for(var colnum = 0; colnum < 22 ; colnum++ ){
+					addHex(geometry, 1.1 + deepframecount*2.2, ybase+1+ rownum * 0.75, -10.75 + colnum+ (rownum % 2) * 0.5 );
+					addHex(geometry, -(1.15 + deepframecount*2.2), ybase+1+ rownum * 0.75, -10.75 + colnum+ (rownum % 2) * 0.5 );
+				}
+			}
 		}
 	}
 
 	// supers
 	var numsupers = 2;
-	for(var supercout = 0 ; supercout < numsupers ; supercout++){
-		var ybase = (numdeeps * 12.2) + supercout * 8.4;
+	for(var supercount = 0 ; supercount < numsupers ; supercount++){
+		var ybase = (numdeeps * 12.2) + supercount * 8.4;
 		load('../models/super.dae', 0, ybase, 0);
-		for(var superframecout = 0 ; superframecout < 4 ; superframecout++){
-			load("../models/superframe.dae", 1.1 + superframecout*2.2, ybase + 0.2, 0);
-			load("../models/superframe.dae", -(1.1 + superframecout*2.2), ybase + 0.2, 0);
+		for(var superframecount = 0 ; superframecount < 4 ; superframecount++){
+			load("../models/superframe.dae", 1.1 + superframecount*2.2, ybase + 0.2, 0);
+			load("../models/superframe.dae", -(1.1 + superframecount*2.2), ybase + 0.2, 0);
+			for(var rownum = 0; rownum < 9 ; rownum++ ){
+				for(var colnum = 0; colnum < 14 ; colnum++ ){
+					addHex(geometry, 1.1 + superframecount*2.2, ybase+1+ rownum * 0.75, -10.75 + colnum+ (rownum % 2) * 0.5 );
+					addHex(geometry, -(1.15 + superframecount*2.2), ybase+1+ rownum * 0.75, -10.75 + colnum+ (rownum % 2) * 0.5 );
+				}
+			}
 		}
 	}
 
@@ -208,7 +242,8 @@ var clock = new THREE.Clock();
 
 function render() {
 
-	var timer = Date.now() * 0.0005;
+	//var timer = Date.now() * 0.0005;
+	var timer = 1
 
 	// camera.position.x = Math.cos( timer ) * 2;
 	// camera.position.y = 2;
