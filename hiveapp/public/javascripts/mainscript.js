@@ -6,33 +6,6 @@ var camera, scene, renderer, objects;
 var particleLight;
 var dae;
 
-/*
-var loader = new THREE.ColladaLoader();
-loader.options.convertUpAxis = true;
-loader.load( '../models/deep.dae', function ( collada ) {
-
-	dae = collada.scene;
-
-	dae.traverse( function ( child ) {
-
-		if ( child instanceof THREE.SkinnedMesh ) {
-
-			var animation = new THREE.Animation( child, child.geometry.animation );
-			animation.play();
-
-		}
-
-	} );
-
-	dae.scale.x = dae.scale.y = dae.scale.z = 0.04;
-	dae.updateMatrix();
-
-	init();
-	animate();
-
-} );
-*/
-
 var setMaterial = function(node, material) {
   node.material = material;
   if (node.children) {
@@ -83,7 +56,7 @@ function addHex(geometry, x, y, z){
 	var mesh = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial( { color: 0xf08000 } ) );
 	mesh.position.set( x, y, z );
 	mesh.rotation.set( 0, 1.55, 0 );
-	mesh.scale.set( 0.7, 0.7, 0.7 );
+	mesh.scale.set( 0.3, 0.3, 0.3 );
 	mesh.name = "Honeycomb Cell";
 	scene.add( mesh );
 	//render();
@@ -190,10 +163,10 @@ function init() {
 		for(var deepframecount = 0 ; deepframecount < 4 ; deepframecount++){
 			load("../models/deepframe.dae", 1.1 + deepframecount*2.2, ybase + 0.27, 0, "Deep Frame");
 			load("../models/deepframe.dae", -(1.1 + deepframecount*2.2), ybase + 0.27, 0, "Deep Frame");
-			for(var rownum = 0; rownum < 14 ; rownum++ ){
-				for(var colnum = 0; colnum < 22 ; colnum++ ){
-					addHex(geometry, 1.1 + deepframecount*2.2, ybase+1+ rownum * 0.75, -10.75 + colnum+ (rownum % 2) * 0.5 );
-					addHex(geometry, -(1.15 + deepframecount*2.2), ybase+1+ rownum * 0.75, -10.75 + colnum+ (rownum % 2) * 0.5 );
+			for(var rownum = 0; rownum < 37 ; rownum++ ){
+				for(var colnum = 0; colnum < 64 ; colnum++ ){
+					addHex(geometry, 1.1 + deepframecount*2.2, ybase+1+ rownum * 0.28, -10.75 + colnum*0.34 + (rownum % 2) * 0.17 );
+					addHex(geometry, -(1.15 + deepframecount*2.2), ybase+1+ rownum * 0.28, -10.75 + colnum*0.34 + (rownum % 2) * 0.17 );
 				}
 			}
 		}
@@ -207,10 +180,10 @@ function init() {
 		for(var superframecount = 0 ; superframecount < 4 ; superframecount++){
 			load("../models/superframe.dae", 1.1 + superframecount*2.2, ybase + 0.2, 0, "Super Frame");
 			load("../models/superframe.dae", -(1.1 + superframecount*2.2), ybase + 0.2, 0, "Super Frame");
-			for(var rownum = 0; rownum < 9 ; rownum++ ){
-				for(var colnum = 0; colnum < 22 ; colnum++ ){
-					addHex(geometry, 1.1 + superframecount*2.2, ybase+1+ rownum * 0.75, -10.75 + colnum+ (rownum % 2) * 0.5 );
-					addHex(geometry, -(1.15 + superframecount*2.2), ybase+1+ rownum * 0.75, -10.75 + colnum+ (rownum % 2) * 0.5 );
+			for(var rownum = 0; rownum < 24 ; rownum++ ){
+				for(var colnum = 0; colnum < 64 ; colnum++ ){
+					addHex(geometry, 1.1 + superframecount*2.2, ybase+1+ rownum * 0.28, -10.75 + colnum*0.34 + (rownum % 2) * 0.17 );
+					addHex(geometry, -(1.15 + superframecount*2.2), ybase+1+ rownum * 0.28, -10.75 + colnum*0.34 + (rownum % 2) * 0.17 );
 				}
 			}
 		}
@@ -219,8 +192,101 @@ function init() {
 	// inner cover
 	load('../models/innercover.dae', 0, (numdeeps * 12.2) + (numsupers * 8.4), 0, "Inner Cover");
 
+	// gui testing
+/*
+	var cubeGeometry = new THREE.CubeGeometry( 50, 50, 50 );
+	var cubeMaterial = new THREE.MeshPhongMaterial( { color:0xff0000, transparent:true, opacity:1 } );
+	cube = new THREE.Mesh( cubeGeometry, cubeMaterial );
+	cube.position.set(0,30,0);
+	scene.add(cube);
+
+	var axes = new THREE.AxisHelper();
+	scene.add(axes);
+
+	
+	gui = new dat.GUI();
+	
+	parameters = 
+	{
+		x: 0, y: 30, z: 0,
+		color: "#ff0000", // color (change "#" to "0x")
+		opacity: 1, 
+		visible: true,
+		material: "Phong",
+		reset: function() { resetCube() }
+	};
+
+	var folder1 = gui.addFolder('Position');
+	var cubeX = folder1.add( parameters, 'x' ).min(-200).max(200).step(1).listen();
+	var cubeY = folder1.add( parameters, 'y' ).min(0).max(100).step(1).listen();
+	var cubeZ = folder1.add( parameters, 'z' ).min(-200).max(200).step(1).listen();
+	folder1.open();
+	
+	cubeX.onChange(function(value) 
+	{   cube.position.x = value;   });
+	cubeY.onChange(function(value) 
+	{   cube.position.y = value;   });
+	cubeZ.onChange(function(value) 
+	{   cube.position.z = value;   });
+	
+	var cubeColor = gui.addColor( parameters, 'color' ).name('Color').listen();
+	cubeColor.onChange(function(value) // onFinishChange
+	{   cube.material.color.setHex( value.replace("#", "0x") );   });
+	
+	var cubeOpacity = gui.add( parameters, 'opacity' ).min(0).max(1).step(0.01).name('Opacity').listen();
+	cubeOpacity.onChange(function(value)
+	{   cube.material.opacity = value;   });
+	
+	var cubeMaterial = gui.add( parameters, 'material', [ "Basic", "Lambert", "Phong", "Wireframe" ] ).name('Material Type').listen();
+	cubeMaterial.onChange(function(value) 
+	{   updateCube();   });
+	
+	var cubeVisible = gui.add( parameters, 'visible' ).name('Visible?').listen();
+	cubeVisible.onChange(function(value) 
+	{   cube.visible = value;  	});
+	
+	gui.add( parameters, 'reset' ).name("Reset Cube Parameters");
+	
+	gui.open();
+	*/
 }
 
+/*
+function updateCube()
+{
+	var value = parameters.material;
+	var newMaterial;
+	if (value == "Basic")
+		newMaterial = new THREE.MeshBasicMaterial( { color: 0x000000 } );
+	else if (value == "Lambert")
+		newMaterial = new THREE.MeshLambertMaterial( { color: 0x000000 } );
+	else if (value == "Phong")
+		newMaterial = new THREE.MeshPhongMaterial( { color: 0x000000 } );
+	else // (value == "Wireframe")
+		newMaterial = new THREE.MeshBasicMaterial( { wireframe: true } );
+	cube.material = newMaterial;
+	
+	cube.position.x = parameters.x;
+	cube.position.y = parameters.y;
+	cube.position.z = parameters.z;
+	cube.material.color.setHex( parameters.color.replace("#", "0x") );
+	cube.material.opacity = parameters.opacity;  
+	cube.material.transparent = true;
+	cube.visible = parameters.visible;
+	
+}
+function resetCube()
+{
+	parameters.x = 0;
+	parameters.y = 30;
+	parameters.z = 0;
+	parameters.color = "#ff0000";
+	parameters.opacity = 1;
+	parameters.visible = true;
+	parameters.material = "Phong";
+	updateCube();
+}
+*/
 function onWindowResize() {
 
 	camera.aspect = window.innerWidth / window.innerHeight;
