@@ -54,9 +54,11 @@ function load(daeLocation, x, y, z, name){
 
 function addHex(geometry, x, y, z){
 	var mesh = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial( { color: 0xf08000 } ) );
-	mesh.position.set( x, y, z );
+	var rand = Math.random();
+	rand = rand + (1-rand)/3;
+	mesh.position.set( x - rand/2 + 0.25, y, z );
 	mesh.rotation.set( 0, 1.55, 0 );
-	mesh.scale.set( 0.3, 0.3, 0.3 );
+	mesh.scale.set( 0.35, 0.35, 0.35 + rand );
 	mesh.name = "Honeycomb Cell";
 	scene.add( mesh );
 	//render();
@@ -149,6 +151,17 @@ function init() {
 	hexShape.lineTo( -0.5, 0.25 );
 	hexShape.lineTo( 0, 0 );
 
+	var hole = new THREE.Path();
+    hole.moveTo(0, 0.1);
+    hole.lineTo(0.4, 0.3);
+    hole.lineTo(0.4, 0.7);
+    hole.lineTo(0, 0.9);
+    hole.lineTo(-0.4, 0.7);
+    hole.lineTo(-0.4, 0.3);
+    hole.lineTo(0, 0.1);
+
+    hexShape.holes.push(hole);
+
 	var extrudeSettings = { amount: 0.3, bevelEnabled: false, bevelSegments: 1, steps: 1, bevelSize: 0.2, bevelThickness: 0.2 };
 	var geometry = new THREE.ExtrudeGeometry( hexShape, extrudeSettings );
 	//var geometry = new THREE.ShapeGeometry( hexShape );
@@ -164,10 +177,10 @@ function init() {
 		for(var deepframecount = 0 ; deepframecount < 4 ; deepframecount++){
 			load("../models/deepframe.dae", 1.1 + deepframecount*2.2, ybase + 0.27, 0, "Deep Frame");
 			load("../models/deepframe.dae", -(1.1 + deepframecount*2.2), ybase + 0.27, 0, "Deep Frame");
-			for(var rownum = 0; rownum < 37 ; rownum++ ){
-				for(var colnum = 0; colnum < 64 ; colnum++ ){
-					addHex(geometry, 1.05 + deepframecount*2.2, ybase+1+ rownum * 0.28, -10.75 + colnum*0.34 + (rownum % 2) * 0.17 );
-					addHex(geometry, -(1.15 + deepframecount*2.2), ybase+1+ rownum * 0.28, -10.75 + colnum*0.34 + (rownum % 2) * 0.17 );
+			for(var rownum = 0; rownum < 43 ; rownum++ ){
+				for(var colnum = 0; colnum < 68 ; colnum++ ){
+					addHex(geometry, 1.05 + deepframecount*2.2, ybase+1+ rownum * 0.236, -10.64 + colnum*0.315 + (rownum % 2) * 0.1575 );
+					addHex(geometry, -(1.15 + deepframecount*2.2), ybase+1+ rownum * 0.236, -10.64 + colnum*0.315 + (rownum % 2) * 0.1575 );
 				}
 			}
 		}
@@ -181,10 +194,10 @@ function init() {
 		for(var superframecount = 0 ; superframecount < 4 ; superframecount++){
 			load("../models/superframe.dae", 1.1 + superframecount*2.2, ybase + 0.2, 0, "Super Frame");
 			load("../models/superframe.dae", -(1.1 + superframecount*2.2), ybase + 0.2, 0, "Super Frame");
-			for(var rownum = 0; rownum < 24 ; rownum++ ){
-				for(var colnum = 0; colnum < 64 ; colnum++ ){
-					addHex(geometry, 1.1 + superframecount*2.2, ybase+1+ rownum * 0.28, -10.75 + colnum*0.34 + (rownum % 2) * 0.17 );
-					addHex(geometry, -(1.15 + superframecount*2.2), ybase+1+ rownum * 0.28, -10.75 + colnum*0.34 + (rownum % 2) * 0.17 );
+			for(var rownum = 0; rownum < 28 ; rownum++ ){
+				for(var colnum = 0; colnum < 68 ; colnum++ ){
+					addHex(geometry, 1.05 + superframecount*2.2, ybase+1+ rownum * 0.236, -10.64 + colnum*0.315 + (rownum % 2) * 0.1575 );
+					addHex(geometry, -(1.15 + superframecount*2.2), ybase+1+ rownum * 0.236, -10.64 + colnum*0.315 + (rownum % 2) * 0.1575 );
 				}
 			}
 		}
