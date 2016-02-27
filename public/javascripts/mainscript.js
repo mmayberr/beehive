@@ -149,8 +149,9 @@ function init() {
 	hexShape.lineTo( -0.5, 0.25 );
 	hexShape.lineTo( 0, 0 );
 
-	var extrudeSettings = { amount: 0.2, bevelEnabled: true, bevelSegments: 1, steps: 1, bevelSize: 0.2, bevelThickness: 0.2 };
+	var extrudeSettings = { amount: 0.3, bevelEnabled: false, bevelSegments: 1, steps: 1, bevelSize: 0.2, bevelThickness: 0.2 };
 	var geometry = new THREE.ExtrudeGeometry( hexShape, extrudeSettings );
+	//var geometry = new THREE.ShapeGeometry( hexShape );
 
 	// base entrance
 	load('../models/bottomboard.dae', 0, -1.4, 0, "Bottom Board");
@@ -165,7 +166,7 @@ function init() {
 			load("../models/deepframe.dae", -(1.1 + deepframecount*2.2), ybase + 0.27, 0, "Deep Frame");
 			for(var rownum = 0; rownum < 37 ; rownum++ ){
 				for(var colnum = 0; colnum < 64 ; colnum++ ){
-					addHex(geometry, 1.1 + deepframecount*2.2, ybase+1+ rownum * 0.28, -10.75 + colnum*0.34 + (rownum % 2) * 0.17 );
+					addHex(geometry, 1.05 + deepframecount*2.2, ybase+1+ rownum * 0.28, -10.75 + colnum*0.34 + (rownum % 2) * 0.17 );
 					addHex(geometry, -(1.15 + deepframecount*2.2), ybase+1+ rownum * 0.28, -10.75 + colnum*0.34 + (rownum % 2) * 0.17 );
 				}
 			}
@@ -314,9 +315,9 @@ function render() {
 	//var timer = Date.now() * 0.0005;
 	var timer = 1
 
-	// camera.position.x = Math.cos( timer ) * 2;
-	// camera.position.y = 2;
-	// camera.position.z = Math.sin( timer ) * 2;
+	//camera.position.x = Math.cos( timer ) * 2;
+	//camera.position.y = 2;
+	//camera.position.z = Math.sin( timer ) * 2;
 
 	// camera.lookAt( scene.position );
 
