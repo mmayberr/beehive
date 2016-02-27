@@ -56,7 +56,7 @@ function addHex(geometry, x, y, z){
 	var mesh = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial( { color: 0xf08000 } ) );
 	var rand = Math.random();
 	rand = rand + (1-rand)/3;
-	mesh.position.set( x - rand/2 + 0.25, y, z );
+	mesh.position.set( x - (1-rand/2) + 0.5, y, z );
 	mesh.rotation.set( 0, 1.55, 0 );
 	mesh.scale.set( 0.35, 0.35, 0.35 + rand );
 	mesh.name = "Honeycomb Cell";
