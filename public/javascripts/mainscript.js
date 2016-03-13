@@ -6,6 +6,33 @@ var camera, scene, renderer, objects;
 var particleLight;
 var dae;
 
+var hexShape = new THREE.Shape();
+hexShape.moveTo( 0,0 );
+hexShape.lineTo( 0.5, 0.25 );
+hexShape.lineTo( 0.5, 0.75 );
+hexShape.lineTo( 0, 1 );
+hexShape.lineTo( -0.5, 0.75 );
+hexShape.lineTo( -0.5, 0.25 );
+hexShape.lineTo( 0, 0 );
+
+/*var hole = new THREE.Path();
+hole.moveTo(0, 0.1);
+hole.lineTo(0.4, 0.3);
+hole.lineTo(0.4, 0.7);
+hole.lineTo(0, 0.9);
+hole.lineTo(-0.4, 0.7);
+hole.lineTo(-0.4, 0.3);
+hole.lineTo(0, 0.1);*/
+
+var hole = new THREE.Path();
+hole.moveTo( 0, 0.1 );
+hole.quadraticCurveTo( 0.36, 0.1, 0.36, 0.45 );
+hole.quadraticCurveTo( 0.36, 0.9, 0, 0.9 );
+hole.quadraticCurveTo( -0.36, 0.9, -0.36, 0.45 );
+hole.quadraticCurveTo( -0.36, 0.1, 0, 0.1 );
+
+hexShape.holes.push(hole);
+
 var setMaterial = function(node, material) {
   node.material = material;
   if (node.children) {
@@ -41,8 +68,6 @@ function load(daeLocation, x, y, z, name){
 
 			var material = new THREE.MeshBasicMaterial();
             material.map = THREE.ImageUtils.loadTexture('../images/wood.png');
-            material.bumpMap = THREE.ImageUtils.loadTexture('../images/woodbw.png');
-			material.bumpScale = 0.05;
 			setMaterial(dae, material);
 			// is texture even working??
 
@@ -52,16 +77,67 @@ function load(daeLocation, x, y, z, name){
     });
 }
 
-function addHex(geometry, x, y, z){
+function addHex(geometry, x, y, z, honeyFactor, broodFactor){
 	var mesh = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial( { color: 0xf08000 } ) );
 	var rand = Math.random();
 	rand = rand + (1-rand)/3;
-	mesh.position.set( x - (1-rand/2) + 0.5, y, z );
-	mesh.rotation.set( 0, 1.55, 0 );
-	mesh.scale.set( 0.35, 0.35, 0.35 + rand );
+	var leftdepth = 1.5; // 0.175 minimum. no need to adjust
+	var rightdepth = 1.5; // 0.175 minimum. need to adjust point which attaches to frame
+	var adjustment = (rightdepth - 0.175) * 0.3
+	mesh.position.set( x + adjustment /*- (1-rand/2) + 0.5*/, y, z );
+	mesh.rotation.set( 0, -Math.PI/2, 0 );
+	mesh.scale.set( 0.35, 0.35, leftdepth+rightdepth );
 	mesh.name = "Honeycomb Cell";
 	scene.add( mesh );
 	//render();
+}
+
+function buildHive(numdeeps, numsupers){
+	// ready cells
+	var extrudeSettings = { amount: 0.3, bevelEnabled: false, bevelSegments: 1, steps: 1, bevelSize: 0.2, bevelThickness: 0.2 };
+	var geometry = new THREE.ExtrudeGeometry( hexShape, extrudeSettings );
+
+	// base entrance
+	load('../models/bottomboard.dae', 0, -1.4, 0, "Bottom Board");
+
+	// deeps
+	for(var deepcount = 0 ; deepcount < numdeeps ; deepcount++){
+		var ybase = deepcount * 12.2;
+		load('../models/deep.dae', 0, ybase, 0, "Deep");
+		for(var deepframecount = 0 ; deepframecount < 4 ; deepframecount++){
+			load("../models/deepframe.dae", 1.1 + deepframecount*2.2, ybase + 0.27, 0, "Deep Frame");
+			load("../models/deepframe.dae", -(1.1 + deepframecount*2.2), ybase + 0.27, 0, "Deep Frame");
+			for(var rownum = 0; rownum < 43 ; rownum++ ){
+				for(var colnum = 0; colnum < 68 ; colnum++ ){
+					var horizontal = -10.64 + colnum*0.315 + (rownum % 2) * 0.1575;
+					var vertical = ybase+1+ rownum * 0.237;
+					var honey = (Math.abs(22-rownum) + Math.abs(34-colnum))/56 // close to 1 = more likely honey
+					var brood = 1 - honey // close to 1 = more likely brood
+					addHex(geometry, 1.15 + deepframecount*2.2, vertical, horizontal, honey, brood );
+					addHex(geometry, -(1.05 + deepframecount*2.2), vertical, horizontal, honey, brood );
+				}
+			}
+		}
+	}
+
+	// supers
+	for(var supercount = 0 ; supercount < numsupers ; supercount++){
+		var ybase = (numdeeps * 12.2) + supercount * 8.4;
+		load('../models/super.dae', 0, ybase, 0, "Super");
+		for(var superframecount = 0 ; superframecount < 4 ; superframecount++){
+			load("../models/superframe.dae", 1.1 + superframecount*2.2, ybase + 0.2, 0, "Super Frame");
+			load("../models/superframe.dae", -(1.1 + superframecount*2.2), ybase + 0.2, 0, "Super Frame");
+			for(var rownum = 0; rownum < 28 ; rownum++ ){
+				for(var colnum = 0; colnum < 68 ; colnum++ ){
+					addHex(geometry, 1.4 + superframecount*2.2, ybase+1+ rownum * 0.236, -10.64 + colnum*0.315 + (rownum % 2) * 0.1575 );
+					addHex(geometry, -(0.8 + superframecount*2.2), ybase+1+ rownum * 0.236, -10.64 + colnum*0.315 + (rownum % 2) * 0.1575 );
+				}
+			}
+		}
+	}
+
+	// inner cover
+	load('../models/innercover.dae', 0, (numdeeps * 12.2) + (numsupers * 8.4), 0, "Inner Cover");
 }
 
 function init() {
@@ -71,7 +147,6 @@ function init() {
 
 	// camera
 	camera = new THREE.PerspectiveCamera( 45, window.innerWidth / window.innerHeight, 1, 100 );
-	// camera.position.z = 250;
 	camera.position.set( 2, 2, 3 );
 
 	controls = new THREE.FlyControls( camera );
@@ -84,34 +159,53 @@ function init() {
 
 	scene = new THREE.Scene();
 
-	// Grid
+	// Ground
+	var grassTex = THREE.ImageUtils.loadTexture('images/grass.png'); 
+	grassTex.wrapS = THREE.RepeatWrapping; 
+	grassTex.wrapT = THREE.RepeatWrapping; 
+	grassTex.repeat.x = 256; 
+	grassTex.repeat.y = 256; 
+	var groundMat = new THREE.MeshBasicMaterial({map:grassTex}); 
 
-	var size = 14, step = 1;
+	var groundGeo = new THREE.PlaneGeometry(400,400);
 
-	var geometry = new THREE.Geometry();
-	var material = new THREE.LineBasicMaterial( { color: 0x303030 } );
+	var ground = new THREE.Mesh(groundGeo,groundMat); 
+	ground.position.y = -1.3;
+	ground.rotation.x = -Math.PI/2; //-90 degrees around the xaxis 
+	ground.doubleSided = true; 
+	scene.add(ground);  
 
-	for ( var i = - size; i <= size; i += step ) {
+	// Sky
 
-		geometry.vertices.push( new THREE.Vector3( - size, - 0.04, i ) );
-		geometry.vertices.push( new THREE.Vector3(   size, - 0.04, i ) );
+	var urls = [ 
+	    "images/sky.png", 
+	    "images/sky.png", 
+	    "images/sky.png", 
+	    "images/sky.png", 
+	    "images/sky.png", 
+	    "images/sky.png", 
+	]; 
+	var textureCube = THREE.ImageUtils.loadTextureCube(urls);
+	textureCube.format = THREE.RGBFormat; 
+	//setup the cube shader 
+	var shader = THREE.ShaderLib["cube"]; 
+	var uniforms = THREE.UniformsUtils.clone(shader.uniforms); 
+	uniforms['tCube'].texture = textureCube; 
+	var material = new THREE.ShaderMaterial({ 
+	        fragmentShader : shader.fragmentShader, 
+	        vertexShader   : shader.vertexShader, 
+	        uniforms       : uniforms 
+	});
+	//create a skybox 
+	var size = 100; 
+	skyboxMesh = new THREE.Mesh(new THREE.CubeGeometry(size,size,size),material); 
+	skyboxMesh.flipSided = true;
+	scene.add(skyboxMesh);  
 
-		geometry.vertices.push( new THREE.Vector3( i, - 0.04, - size ) );
-		geometry.vertices.push( new THREE.Vector3( i, - 0.04,   size ) );
-
-	}
-
-	var line = new THREE.LineSegments( geometry, material );
-	scene.add( line );
-
-	// Add the COLLADA
-
-	scene.add( dae );
+	// Lights
 
 	particleLight = new THREE.Mesh( new THREE.SphereGeometry( 4, 8, 8 ), new THREE.MeshBasicMaterial( { color: 0xffffff } ) );
 	scene.add( particleLight );
-
-	// Lights
 
 	scene.add( new THREE.AmbientLight( 0xcccccc ) );
 
@@ -139,130 +233,43 @@ function init() {
 
 	window.addEventListener( 'resize', onWindowResize, false );
 
-	// load models
 
-	// ready cells
-	var hexShape = new THREE.Shape();
-	hexShape.moveTo( 0,0 );
-	hexShape.lineTo( 0.5, 0.25 );
-	hexShape.lineTo( 0.5, 0.75 );
-	hexShape.lineTo( 0, 1 );
-	hexShape.lineTo( -0.5, 0.75 );
-	hexShape.lineTo( -0.5, 0.25 );
-	hexShape.lineTo( 0, 0 );
+	// Add Objects
+	buildHive(2,2);
 
-	var hole = new THREE.Path();
-    hole.moveTo(0, 0.1);
-    hole.lineTo(0.4, 0.3);
-    hole.lineTo(0.4, 0.7);
-    hole.lineTo(0, 0.9);
-    hole.lineTo(-0.4, 0.7);
-    hole.lineTo(-0.4, 0.3);
-    hole.lineTo(0, 0.1);
 
-    hexShape.holes.push(hole);
-
-	var extrudeSettings = { amount: 0.3, bevelEnabled: false, bevelSegments: 1, steps: 1, bevelSize: 0.2, bevelThickness: 0.2 };
-	var geometry = new THREE.ExtrudeGeometry( hexShape, extrudeSettings );
-	//var geometry = new THREE.ShapeGeometry( hexShape );
-
-	// base entrance
-	load('../models/bottomboard.dae', 0, -1.4, 0, "Bottom Board");
-
-	// deeps
-	var numdeeps = 2;
-	for(var deepcount = 0 ; deepcount < numdeeps ; deepcount++){
-		var ybase = deepcount * 12.2;
-		load('../models/deep.dae', 0, ybase, 0, "Deep");
-		for(var deepframecount = 0 ; deepframecount < 4 ; deepframecount++){
-			load("../models/deepframe.dae", 1.1 + deepframecount*2.2, ybase + 0.27, 0, "Deep Frame");
-			load("../models/deepframe.dae", -(1.1 + deepframecount*2.2), ybase + 0.27, 0, "Deep Frame");
-			for(var rownum = 0; rownum < 43 ; rownum++ ){
-				for(var colnum = 0; colnum < 68 ; colnum++ ){
-					addHex(geometry, 1.05 + deepframecount*2.2, ybase+1+ rownum * 0.236, -10.64 + colnum*0.315 + (rownum % 2) * 0.1575 );
-					addHex(geometry, -(1.15 + deepframecount*2.2), ybase+1+ rownum * 0.236, -10.64 + colnum*0.315 + (rownum % 2) * 0.1575 );
-				}
-			}
-		}
-	}
-
-	// supers
-	var numsupers = 2;
-	for(var supercount = 0 ; supercount < numsupers ; supercount++){
-		var ybase = (numdeeps * 12.2) + supercount * 8.4;
-		load('../models/super.dae', 0, ybase, 0, "Super");
-		for(var superframecount = 0 ; superframecount < 4 ; superframecount++){
-			load("../models/superframe.dae", 1.1 + superframecount*2.2, ybase + 0.2, 0, "Super Frame");
-			load("../models/superframe.dae", -(1.1 + superframecount*2.2), ybase + 0.2, 0, "Super Frame");
-			for(var rownum = 0; rownum < 28 ; rownum++ ){
-				for(var colnum = 0; colnum < 68 ; colnum++ ){
-					addHex(geometry, 1.05 + superframecount*2.2, ybase+1+ rownum * 0.236, -10.64 + colnum*0.315 + (rownum % 2) * 0.1575 );
-					addHex(geometry, -(1.15 + superframecount*2.2), ybase+1+ rownum * 0.236, -10.64 + colnum*0.315 + (rownum % 2) * 0.1575 );
-				}
-			}
-		}
-	}
-
-	// inner cover
-	load('../models/innercover.dae', 0, (numdeeps * 12.2) + (numsupers * 8.4), 0, "Inner Cover");
-
-	// gui testing
-/*
-	var cubeGeometry = new THREE.CubeGeometry( 50, 50, 50 );
-	var cubeMaterial = new THREE.MeshPhongMaterial( { color:0xff0000, transparent:true, opacity:1 } );
-	cube = new THREE.Mesh( cubeGeometry, cubeMaterial );
-	cube.position.set(0,30,0);
-	scene.add(cube);
-
-	var axes = new THREE.AxisHelper();
-	scene.add(axes);
-
-	
-	gui = new dat.GUI();
+	// GUI
+	gui = new dat.GUI({
+	    height : 4 * 32 - 1
+	});
 	
 	parameters = 
 	{
-		x: 0, y: 30, z: 0,
-		color: "#ff0000", // color (change "#" to "0x")
-		opacity: 1, 
-		visible: true,
-		material: "Phong",
-		reset: function() { resetCube() }
+		month: "March",
+		daytime: true,
+		visibility: "All"
+		//reset: function() { resetCube() }
 	};
 
-	var folder1 = gui.addFolder('Position');
-	var cubeX = folder1.add( parameters, 'x' ).min(-200).max(200).step(1).listen();
-	var cubeY = folder1.add( parameters, 'y' ).min(0).max(100).step(1).listen();
-	var cubeZ = folder1.add( parameters, 'z' ).min(-200).max(200).step(1).listen();
-	folder1.open();
+	var hiveMonth = gui.add( parameters, 'month', [ "January", "Febuary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ] ).name('Month').listen();
+	hiveMonth.onChange(function(value) 
+	{   /*updateCube(); */  });
+
+	var hiveTime = gui.add( parameters, 'daytime' ).name('Daytime?').listen();
 	
-	cubeX.onChange(function(value) 
-	{   cube.position.x = value;   });
-	cubeY.onChange(function(value) 
-	{   cube.position.y = value;   });
-	cubeZ.onChange(function(value) 
-	{   cube.position.z = value;   });
+	hiveMonth.onFinishChange(function(value) 
+	{   value = value;   });
+	hiveTime.onChange(function(value) 
+	{   /*cube.position.y = value; */  });
 	
-	var cubeColor = gui.addColor( parameters, 'color' ).name('Color').listen();
-	cubeColor.onChange(function(value) // onFinishChange
-	{   cube.material.color.setHex( value.replace("#", "0x") );   });
-	
-	var cubeOpacity = gui.add( parameters, 'opacity' ).min(0).max(1).step(0.01).name('Opacity').listen();
-	cubeOpacity.onChange(function(value)
-	{   cube.material.opacity = value;   });
-	
-	var cubeMaterial = gui.add( parameters, 'material', [ "Basic", "Lambert", "Phong", "Wireframe" ] ).name('Material Type').listen();
+	var cubeMaterial = gui.add( parameters, 'visibility', [ "All", "Supers", "Deeps" ] ).name('View Type').listen();
 	cubeMaterial.onChange(function(value) 
-	{   updateCube();   });
+	{   /*updateCube(); */  });
 	
-	var cubeVisible = gui.add( parameters, 'visible' ).name('Visible?').listen();
-	cubeVisible.onChange(function(value) 
-	{   cube.visible = value;  	});
-	
-	gui.add( parameters, 'reset' ).name("Reset Cube Parameters");
+	//gui.add( parameters, 'reset' ).name("Reset Cube Parameters");
 	
 	gui.open();
-	*/
+	
 }
 
 /*
@@ -325,14 +332,7 @@ var clock = new THREE.Clock();
 
 function render() {
 
-	//var timer = Date.now() * 0.0005;
 	var timer = 1
-
-	//camera.position.x = Math.cos( timer ) * 2;
-	//camera.position.y = 2;
-	//camera.position.z = Math.sin( timer ) * 2;
-
-	// camera.lookAt( scene.position );
 
 	particleLight.position.x = Math.sin( timer * 4 ) * 3009;
 	particleLight.position.y = Math.cos( timer * 5 ) * 4000;
