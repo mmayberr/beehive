@@ -1,14 +1,11 @@
 extends layout
 
 block content
-    #info Use WASD to fly
-        br
-        | QE to tilt
-        br
-        | and arrow keys to pivot
-        br
-        a(href='http://threejs.org') three.js
+    #info Use WASD to fly, QE to tilt, & arrow keys to pivot. Click objects to see what they are!
+    #act
+    script(src='//code.jquery.com/jquery-1.12.0.min.js')
     script(src='/javascripts/three.js')
+    script(src='/javascripts/ReusableRay.js.js')
     script(src='/javascripts/HexGrid.js')
     script(src='/javascripts/ColladaAnimation.js')
     script(src='/javascripts/ColladaAnimationHandler.js')

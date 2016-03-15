@@ -6,13 +6,33 @@ body {
 }
 
 #info {
+	font-family:arial;
+	font-size:16px;
 	color: #fff;
 	position: absolute;
 	top: 10px;
-	width: 100%;
+	right:280px;
+	left: 100px;
 	text-align: center;
 	z-index: 100;
 	display:block;
+	background-color:rgba(8, 8, 8, 0.8);
+	padding:10px;
+}
+
+#act {
+	font-family:arial;
+	font-size:14px;
+	color: #fff;
+	position: absolute;
+	top: 115px;
+	right:15px;
+	width:225px;
+	text-align: justify;
+	z-index: 100;
+	display:block;
+	background-color:rgba(8, 8, 8, 0.8);
+	padding:10px;
 }
 
 a { color: skyblue }
