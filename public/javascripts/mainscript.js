@@ -93,7 +93,7 @@ var combRatios = {
 			honey: 1
 		},
 		"activity": {
-			"normal": "The bees are huddling together to stay warm, keeping the hive at a near-constant ___ degrees.",
+			"normal": "The bees are huddling together to stay warm, keeping the hive at a near-constant temperature.",
 			"stress": "Moisture in the hive, excess space from supers which should have been removed, and extreme cold can make it difficult for the bees to stay warm. They may have trouble reaching the honey stored near the top of their hive."
 		}
 	},
@@ -106,6 +106,10 @@ var combRatios = {
 		"deep": {
 			empty: 0,
 			honey: 1
+		},
+		"activity": {
+			"normal": "This month is generally a transition period from winter to spring. On days when the temperature is above 50°F, bees will go on cleansing flights to avoid soiling the hive. Being a crutial time for the hive, internal hive inspections are not recommended.",
+			"stress": "A long winter can be fatal to a hive. Without the ability to go outside, bees may soil the hive, inviting harmful bacteria into their living space. They also won't have an early food supply to support the new brood."
 		}
 	},
 	"March": {
@@ -125,7 +129,7 @@ var combRatios = {
 			"stress": [2.1,1.2]
 		},
 		"activity": {
-			"normal": "The weather should be warm enough for the hive to become active again. Deceased bees are removed from the hive and the queen begins laying her eggs.",
+			"normal": "The weather should be warm enough for the hive to become fully active again. Deceased bees are removed from the hive and the queen begins laying her eggs.",
 			"stress": "Hives often die in the early spring due to a lack of food supply. In the Deep Frame Detail notice how so few cells contain pollen or nectar."
 		}
 	},
@@ -133,13 +137,13 @@ var combRatios = {
 		"numSups": 2,
 		"numDeeps": 2,
 		"super": {
-			honey:0,
-			empty:0.5
+			honey:0.2,
+			empty:0.7
 		},
 		"deep": {
 			brood: 0.5,
 			pollen:0.8,
-			honey: 1
+			honey: 0.9
 		},
 		"workToDroneRatio": {
 			"normal": [2.9,1.6],
@@ -151,127 +155,149 @@ var combRatios = {
 		}
 	},
 	"May": {
-		"numSups": 2,
+		"numSups": 3,
 		"numDeeps": 2,
 		"super": {
-			honey:0,
+			honey:0.5,
 			empty: 1
 		},
 		"deep": {
-			brood: 0,
-			pollen:0.5,
-			honey: 1
+			brood: 0.8,
+			pollen:1
 		},
 		"workToDroneRatio": {
 			"normal": [3.5,0.4],
 			"stress": [1,0.7]
+		},
+		"activity": {
+			"normal": "The hive is foraging extensively, building up comb and filling up supers as they're added to the hive.",
+			"stress": "The springtime is when bees are most vulnerable to spring diseases, such as chalkbrood, European foulbrood, and nosema. Remember, not adding enough supers will cause a colony to swarm!"
 		}
 	},
 	"June": {
 		"numSups": 3,
 		"numDeeps": 2,
 		"super": {
-			honey:0,
-			empty: 1
+			honey:0
 		},
 		"deep": {
-			brood: 0,
-			pollen:0.5,
-			honey: 1
+			brood: 0.5,
+			pollen:0.8,
+			honey: 0.9
 		},
 		"workToDroneRatio": {
 			"normal": [3.6,0.2],
 			"stress": [1,0.7]
+		},
+		"activity": {
+			"normal": "It's nearing the end of the spring honey flow. Swarming becomes less likely and spring honey can be collected.",
+			"stress": "The increasing heat means that more workers need to focus on water collection. If there is no source of water or no ventilation in the hive, the temperature will overwhelm them."
 		}
 	},
 	"July": {
-		"numSups": 3,
+		"numSups": 2,
 		"numDeeps": 2,
 		"super": {
-			honey:0,
+			honey:0.5,
 			empty: 1
 		},
 		"deep": {
-			brood: 0,
-			pollen:0.5,
+			brood: 0.5,
+			pollen:0.8,
 			honey: 1
 		},
 		"workToDroneRatio": {
 			"normal": [3.5,0.3],
 			"stress": [1,0.7]
+		},
+		"activity": {
+			"normal": "The spring flow is over, but there are plenty of locations which have enough summer flowers for the bees to continue producing summer honey. Excess spring honey can be collected this month.",
+			"stress": "The lack of available nectar is dangerous to the hive, especially when robber bees from other hives will invade to steal some of the vectar collected in the spring for themselves."
 		}
 	},
 	"August": {
 		"numSups": 1,
 		"numDeeps": 2,
 		"super": {
-			honey:0,
-			empty: 1
+			honey:0
 		},
 		"deep": {
-			brood: 0,
-			pollen:0.5,
-			honey: 1
+			brood: 0.2,
+			pollen:0.4,
+			honey: 0.8
 		},
 		"workToDroneRatio": {
 			"normal": [2.8,0.2],
 			"stress": [1,0.7]
+		},
+		"activity": {
+			"normal": "The size of the colony is decreasing, both in the amount of brood and the amount of adult bees. Summer honey can be harvested.",
+			"stress": "Yellow jackets and other animals may attempt to invade the hive for its honey stores. This can reduce the hive's ability to survive the winter."
 		}
 	},
 	"September": {
 		"numSups": 0,
 		"numDeeps": 2,
 		"super": {
-			honey:0,
 			empty: 1
 		},
 		"deep": {
-			brood: 0,
-			pollen:0.5,
-			honey: 1
+			brood: 0.2,
+			pollen:0.4,
+			honey: 0.5
 		},
 		"workToDroneRatio": {
 			"normal": [1,0],
 			"stress": [1,0]
+		},
+		"activity": {
+			"normal": "Hives should be actively preparing for winter, and all excess supers should be removed from the hive to force the consolidation of resources.",
+			"stress": "Hives hindered by varroa mites become easy to see; these hives will not likely survive the winter."
 		}
 	},
 	"October": {
 		"numSups": 0,
 		"numDeeps": 2,
 		"super": {
-			honey:0,
 			empty: 1
 		},
 		"deep": {
-			brood: 0,
-			pollen:0.5,
-			honey: 1
+			pollen:0.3,
+			honey: 0.4
 		},
-		"workToDroneRatio": {
-			"normal": [1,0],
-			"stress": [1,0]
+		"activity": {
+			"normal": "The hive should be ready for winter by now. Their comb should be filled with honey and pollen.",
+			"stress": "Unfortunately, not all hives can find enough to forage to prepare for winter. If their comb is empty, they will need suplement sugar water to survive over winter."
 		}
 	},
 	"November": {
 		"numSups": 0,
 		"numDeeps": 2,
 		"super": {
-			honey:0 //it's too cold to access
+			honey:0 
 		},
 		"deep": {
 			empty: 0,
-			honey: 1
+			honey: 0.2
+		},
+		"activity": {
+			"normal": "Temperatures are dropping, and bees are rarely seen outside due to the lack of forage to collect. The queen has completely stopped laying eggs so the deeps can be filled with honey.",
+			"stress": "Insufficient honey means a hive needs to be fed suplement sugar water. They also run the risk of freezing to death over the winter, especially in poorly made boxes which collect mildew."
 		}
 	},
 	"December": {
 		"numSups": 0,
 		"numDeeps": 2,
 		"super": {
-			honey:0 //it's too cold to access
+			honey:0 
 		},
 		"deep": {
 			empty: 0,
-			honey: 1
+			honey: 0.7
+		},
+		"activity": {
+			"normal": "Over the winter, the bees huddle together to stay warm. They surround the queen and shuffle around to comb containing honey for them to eat.",
+			"stress": "If there are not enough strong, surviving bees, they may not be able to stay warm enough to survive an especially harsh winter."
 		}
 	}
 }
@@ -357,6 +383,7 @@ function addHex(geometry, x, y, z, distFromCen, boxType){
 				var broodmesh
 				var rats = combRatios[hiveMonth]["workToDroneRatio"][state];
 				var stage = Math.random();
+				var stageComp = (isHiveStress) ? [1.0/3, 2.0/3] : [1.0/7, 3.0/7]
 				if(isHiveStress && stage < 0.002){ // chance of queen cell
 					// Queen Cell
 					broodmesh = new THREE.Mesh( new THREE.SphereGeometry( 0.42, 32, 32 ), broodTex );
@@ -365,14 +392,14 @@ function addHex(geometry, x, y, z, distFromCen, boxType){
 					broodmesh.position.set( x - 0.42*i, y, z );
 					broodmesh.name = "Queen Cell";
 					mesh.name = "Queen Cell";
-				}else if( stage < 1.0/7 ){ // 1 egg : 2 : 4
+				}else if( stage < stageComp[0] ){ // 1 egg : 2 : 4
 					broodmesh = new THREE.Mesh( circGeom, eggTex );
 					broodmesh.scale.set( 0.35, 0.35 );
 					broodmesh.rotation.set( 0, -Math.PI/2*i, 0 );
 					broodmesh.position.set( x - 0.2*i, y, z );
 					broodmesh.name = "Egg";
 					mesh.name = "Egg";
-				}else if( stage < 3.0/7){ // 1 : 2 larva : 4
+				}else if( stage < stageComp[1] ){ // 1 : 2 larva : 4
 					//broodmesh = new THREE.Mesh( circGeom, larvaTex );
 					broodmesh = new THREE.Mesh( new THREE.SphereGeometry( 0.42, 32, 32 ), larvaTex );
 					broodmesh.scale.set( 0.3, 0.3, 0.3 );
